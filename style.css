@@ -1,0 +1,118 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  background: #000;
+  color: #fff;
+}
+
+body {
+  font-family: 'Open Sans', sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  padding: 60px 0 80px;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+/* Header */
+header {
+  margin-bottom: 48px;
+}
+
+h1 {
+  font-family: 'Open Sans', sans-serif;
+  font-size: 3.5rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  border-top: 3px solid #fff;
+  border-bottom: 3px solid #fff;
+  padding: 8px 0;
+  margin-bottom: 28px;
+  line-height: 1.1;
+}
+
+.bio {
+  font-style: italic;
+  font-size: 0.95rem;
+  margin-bottom: 24px;
+}
+
+.awards {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.awards p {
+  font-style: italic;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+/* Research */
+.research {
+  margin-top: 48px;
+}
+
+h2 {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+.research ul {
+  list-style: none;
+}
+
+.research li {
+  padding: 6px 0;
+  font-size: 0.9rem;
+}
+
+.research a {
+  color: #fff;
+  text-decoration: none;
+}
+
+.research a:hover {
+  color: #1a6cff;
+}
+
+.research span {
+  color: #888;
+}
+
+/* Footer */
+footer {
+  margin-top: 60px;
+}
+
+.social {
+  display: flex;
+  gap: 24px;
+}
+
+.social a {
+  color: #fff;
+  text-decoration: none;
+  font-size: 0.85rem;
+}
+
+.social a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 740px) {
+  body {
+    padding: 40px 24px 60px;
+  }
+
+  h1 {
+    font-size: 2.2rem;
+  }
+}
