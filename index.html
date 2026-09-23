@@ -56,11 +56,7 @@
 
     .page {
       min-height: 100vh;
-      display: grid;
-      grid-template-rows: 1fr auto;
-      padding: 0 2.5rem;
-      max-width: 1100px;
-      margin: 0 auto;
+      padding: 0 2.5rem 6rem;
     }
 
     .name {
@@ -115,10 +111,22 @@
       color: var(--blue);
     }
 
+    .winner {
+      background: var(--blue);
+      color: var(--bg);
+      padding: 0.05em 0.35em;
+    }
+
+    .winner::selection {
+      background: var(--bg);
+      color: var(--blue);
+    }
+
     /* Research section */
     .research {
       grid-column: 1 / -1;
       padding-top: 1rem;
+      padding-left: 28%;
     }
 
     .section-label {
@@ -162,12 +170,14 @@
       transform: translateX(8px);
     }
 
-    /* Footer */
+    /* Footer — fixed bottom-left */
     footer {
-      padding: 2.5rem 0 1rem;
+      position: fixed;
+      bottom: 2rem;
+      left: 2.5rem;
       display: flex;
-      gap: 2rem;
-      align-items: center;
+      flex-direction: column;
+      gap: 0.55rem;
     }
 
     footer a {
@@ -177,13 +187,11 @@
       text-transform: uppercase;
       color: var(--blue);
       text-decoration: none;
-      opacity: 0.55;
       transition: transform 0.2s ease;
     }
 
     footer a:hover {
       transform: translateX(4px);
-      opacity: 0.55;
     }
   </style>
 </head>
@@ -197,10 +205,10 @@
       <div class="intro">
         <h1 class="intro-headline">Portfolio Manager, Re7 Capital.<br><span class="thinking">Thinking fast and slow.</span></h1>
         <div class="awards">
-          <p>// Fund of the Year (Annual Excellence) — Winner<br>
+          <p>// Fund of the Year (Annual Excellence) — <span class="winner">Winner</span><br>
           Hedgeweek Global Digital Assets Awards 2025, Re7 Capital</p>
           <br>
-          <p>// Fund of the Year (Sustained Excellence) — Winner<br>
+          <p>// Fund of the Year (Sustained Excellence) — <span class="winner">Winner</span><br>
           Hedgeweek Global Digital Assets Awards 2025, Re7 Capital</p>
         </div>
       </div>
