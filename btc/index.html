@@ -78,6 +78,8 @@ tr.open td{color:inherit}
 tr.skip td{opacity:.55}
 th.oc,td.oc{text-align:left;padding-left:18px}
 .pill.hit,.pill.open,.pill.miss{min-width:13ch;text-align:center}
+.rules{margin:8px 0 0;padding-left:18px;color:var(--muted);font-size:12.5px;line-height:1.6;max-width:80ch}
+.rules b{color:var(--fg);font-weight:600}
 .status a{color:var(--accent);text-decoration:none;font-weight:600}
 .status a:hover{text-decoration:underline}
 .pill.skip{color:var(--muted)}
@@ -88,7 +90,14 @@ th.oc,td.oc{text-align:left;padding-left:18px}
   <header>
     <div>
       <h1>BTC <span>Underwater</span></h1>
-      <p class="sub">When Bitcoin climbs from a deep drawdown back above -30% from its all-time high, how often and how fast does it make a new ATH?</p>
+      <p class="sub">After Bitcoin falls at least 50% from its all-time high, then closes back above -30%, how often and how fast does it make a new ATH?</p>
+      <ul class="rules">
+        <li><b>ATH:</b> highest intraday high to date.</li>
+        <li><b>Setup:</b> an intraday low at least 50% below the ATH.</li>
+        <li><b>Cross:</b> the first daily close at or above 70% of the ATH after the setup.</li>
+        <li><b>Excluded:</b> crosses within 60 days of the ATH (Dec 2013 and Jan 2014).</li>
+        <li><b>Hit:</b> a new ATH before any intraday low below the setup low.</li>
+      </ul>
     </div>
     <div class="status" id="status"><span class="dot"></span><span id="statusText">Snapshot</span><a id="liveLink" href="https://lewisharland.io/btc/" target="_blank" rel="noopener" hidden>Open live version →</a></div>
   </header>
@@ -129,7 +138,7 @@ th.oc,td.oc{text-align:left;padding-left:18px}
       <thead><tr><th>Closed above -30%</th><th>Low before</th><th>Cross price</th><th>+7d</th><th>+30d</th><th>+75d</th><th>Worst low after</th><th class="oc">Outcome</th><th>New ATH</th></tr></thead>
       <tbody id="tb"></tbody>
     </table></div>
-    <p class="note" style="margin-top:10px">ATH = highest intraday high. A setup needs an intraday low at least 50% below the ATH, then a daily close back at or above 70% of it. Crosses within 60 days of the ATH are left out. Bitstamp daily prices from Aug 2011, blockchain.com before that; live price from Coinbase. Not a forecast.</p>
+    <p class="note" style="margin-top:10px">Bitstamp daily high, low and close from Aug 2011; blockchain.com daily average before that (one price per day). Recent days and the live price come from Coinbase. Not a forecast.</p>
   </section>
 </div>
 
