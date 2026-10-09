@@ -231,6 +231,13 @@ function render() {
       <td>${fmtUsd(s.p)}</td><td>${cell(s.fwd[0])}</td><td>${cell(s.fwd[1])}</td><td>${cell(s.fwd[2])}</td>
       <td>${cell(s.worst)}</td><td>${out}</td></tr>`;
   }).join('');
+  if (!a.open && price < lv) {
+    const armed = a.armed, dash = '<span class="mut">–</span>';
+    $('tb').insertAdjacentHTML('afterbegin', `<tr class="open"><td><b>Now</b> <span class="mut">not yet</span></td>
+      <td>${fmtPct(a.cy / a.ath - 1)} <span class="mut">${fmtDate(a.cyT, {month:'short', year:'2-digit'})}</span></td>
+      <td>${fmtUsd(lv)} <span class="mut">needed</span></td><td>${dash}</td><td>${dash}</td><td>${dash}</td><td>${dash}</td>
+      <td><span class="pill open">${armed ? 'Set up · waiting for a close ≥ ' + fmtUsd(lv) : 'Waiting for a -50% low'}</span> <span class="mut">${sPct(lv / price - 1)} from ${fmtUsd(price)}</span></td></tr>`);
+  }
   draw();
 }
 
