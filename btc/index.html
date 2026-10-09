@@ -78,6 +78,7 @@ tr.open td{color:inherit}
 tr.skip td{opacity:.55}
 .pill.skip{color:var(--muted)}
 .ctl .seg button{white-space:nowrap}
+table.simple{min-width:0}
 </style>
 
 <div class="wrap">
@@ -119,34 +120,13 @@ tr.skip td{opacity:.55}
   </section>
 
   <section class="panel">
-    <div class="bar">
-      <h2 style="flex-basis:100%">Every cross back above -30%</h2>
-      <div class="ctl">
-        <div class="seg" role="group" aria-label="Which crosses count">
-          <button id="d-50" data-d="-0.5" aria-pressed="true">After a -50% low</button>
-          <button id="d-30" data-d="-0.3" aria-pressed="false">Every cross</button>
-        </div>
-        <div class="seg" role="group" aria-label="What counts as crossing -30%">
-          <button id="x-close" data-x="close" aria-pressed="true">Daily close above</button>
-          <button id="x-high" data-x="high" aria-pressed="false">Intraday high above</button>
-        </div>
-        <div class="seg" role="group" aria-label="Crosses soon after the ATH">
-          <button id="m-60" data-m="60" aria-pressed="true">Skip &lt;60d after ATH</button>
-          <button id="m-0" data-m="0" aria-pressed="false">Count all</button>
-        </div>
-        <div class="seg" role="group" aria-label="Period">
-          <button id="e-all" data-e="all" aria-pressed="true">Since 2010</button>
-          <button id="e-dollar" data-e="dollar" aria-pressed="false">ATH above $1</button>
-        </div>
-      </div>
-    </div>
-    <p class="claim">Claim being tested (@nsquaredvalue): <b>when Bitcoin climbed from -50% below its ATH back to -30%, it made a new ATH within 75 days (median 24), every time, and never went to a new cycle low first.</b></p>
+    <h2>Every recovery above -30% after a -50% drop</h2>
     <p class="note" id="tblNote"></p>
-    <div class="tbl"><table>
-      <thead><tr><th>Crossed above -30%</th><th>Low before cross</th><th>Cross price</th><th>+7d</th><th>+30d</th><th>+75d</th><th>Worst low after</th><th>Outcome</th></tr></thead>
+    <div class="tbl"><table class="simple">
+      <thead><tr><th>Closed above -30%</th><th>Price</th><th>New ATH</th><th>Days to ATH</th></tr></thead>
       <tbody id="tb"></tbody>
     </table></div>
-    <p class="note" style="margin-top:10px">USD. The ATH is the highest intraday high, the -50% low is measured on intraday lows, and a cross is either a daily close or an intraday high at or above 70% of the ATH (toggle). The -50% depth must be reached again before another cross counts. A hit is a new intraday ATH before any intraday low below the low that came before the cross. "Skip &lt;60d after ATH" leaves out crosses within 60 days of the ATH (crash-and-bounce moves like Dec 2013); they stay in the table, greyed out, and don't count. Returns run from the cross price: the close on a close cross, the -30% level on an intraday cross. History: Bitstamp daily OHLC from Aug 2011, blockchain.com daily average before that (one price per day). Recent days and the live price come from Coinbase. A historical summary, not a forecast.</p>
+    <p class="note" style="margin-top:10px">ATH = highest intraday high. A setup needs an intraday low at least 50% below the ATH, then a daily close back at or above 70% of it. Crosses within 60 days of the ATH are left out. Bitstamp daily prices from Aug 2011, blockchain.com before that; live price from Coinbase. Not a forecast.</p>
   </section>
 </div>
 
@@ -165,10 +145,6 @@ let state = { range: 'cycle', era: 'all', depth: -0.5, cross: 'close', minAge: 6
 try {
   const g = k => localStorage.getItem('btcuw2-' + k);
   if (g('range')) state.range = g('range');
-  if (g('era')) state.era = g('era');
-  if (g('depth')) state.depth = +g('depth');
-  if (g('cross')) state.cross = g('cross');
-  if (g('minAge')) state.minAge = +g('minAge');
 } catch (e) {}
 
 function idxAt(t) { let lo = 0, hi = T.length; while (lo < hi) { const m = (lo + hi) >> 1; T[m] < t ? lo = m + 1 : hi = m; } return lo; }
@@ -244,23 +220,12 @@ function render() {
       : `${sPct(lv / price - 1)} from here · needs a ${how} at or above`;
   }
 
-  const skipped = a.setups.filter(s => s.skip).length;
-  $('tblNote').textContent = (state.depth <= -0.5
-    ? 'Crosses that came after an intraday low at least 50% below the ATH (the claim\'s setup). '
-    : 'Every cross back above -30%, however shallow the drawdown before it. ')
-    + `${a.setups.length} crosses since ${state.era === 'all' ? '2010' : '2011'}` + (skipped ? `, ${skipped} skipped for coming within ${state.minAge} days of the ATH.` : '.');
-  const cell = v => v == null ? '<span class="mut">–</span>' : `<span class="${v >= 0 ? 'up' : 'dn'}">${sPct(v)}</span>`;
-  $('tb').innerHTML = a.setups.slice().reverse().map(s => {
-    const cls = s.skip ? 'skip' : s.hit == null ? 'open' : s.hit ? 'hit' : 'miss';
-    let out = s.hit == null ? `<span class="pill open">open · day ${Math.round((now - s.t) / DAY)}</span>`
-      : s.hit ? `<span class="pill hit">New ATH in ${nf(s.days)}d</span>`
-      : `<span class="pill miss">New low first</span> <span class="mut">${s.rec != null ? 'ATH ' + nf(s.days) + 'd later' : 'no ATH yet'}</span>`;
-    if (s.skip) out = `<span class="pill skip">skipped · ${s.age}d after ATH</span> ` + out;
-    return `<tr class="${cls}"><td>${fmtDate(s.t)}</td>
-      <td>${fmtPct(s.low / s.ath - 1)} <span class="mut">${fmtDate(s.lowT, {month:'short', year:'2-digit'})}</span></td>
-      <td>${fmtUsd(s.p)}</td><td>${cell(s.fwd[0])}</td><td>${cell(s.fwd[1])}</td><td>${cell(s.fwd[2])}</td>
-      <td>${cell(s.worst)}</td><td>${out}</td></tr>`;
-  }).join('');
+  const rows = a.setups.filter(s => !s.skip);
+  $('tblNote').textContent = `${a.hits.length} of ${a.resolved.length} went on to a new ATH` + (a.open ? '; one is in progress.' : '.');
+  $('tb').innerHTML = rows.slice().reverse().map(s => `<tr class="${s.hit == null ? 'open' : s.hit ? 'hit' : 'miss'}">
+    <td>${fmtDate(s.t)}</td><td>${fmtUsd(s.p)}</td>
+    <td>${s.hit == null ? '<span class="pill open">in progress</span>' : s.rec != null ? fmtDate(s.rec) : '–'}</td>
+    <td>${s.hit == null ? Math.round((now - s.t) / DAY) + ' so far' : s.hit ? nf(s.days) : '<span class="pill miss">new low first</span>'}</td></tr>`).join('');
   draw();
 }
 
@@ -364,10 +329,6 @@ function wire(attr, key, fn, parse = v => v) {
   sync();
 }
 wire('r', 'range', draw);
-wire('e', 'era', render);
-wire('d', 'depth', render, Number);
-wire('x', 'cross', render);
-wire('m', 'minAge', render, Number);
 new ResizeObserver(() => draw()).observe(cv);
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change', draw);
 new MutationObserver(draw).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
