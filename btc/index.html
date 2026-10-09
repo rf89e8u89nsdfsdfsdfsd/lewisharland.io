@@ -78,7 +78,6 @@ tr.open td{color:inherit}
 tr.skip td{opacity:.55}
 .pill.skip{color:var(--muted)}
 .ctl .seg button{white-space:nowrap}
-table.simple{min-width:0}
 </style>
 
 <div class="wrap">
@@ -122,8 +121,8 @@ table.simple{min-width:0}
   <section class="panel">
     <h2>Every recovery above -30% after a -50% drop</h2>
     <p class="note" id="tblNote"></p>
-    <div class="tbl"><table class="simple">
-      <thead><tr><th>Closed above -30%</th><th>Price</th><th>New ATH</th><th>Days to ATH</th></tr></thead>
+    <div class="tbl"><table>
+      <thead><tr><th>Closed above -30%</th><th>Low before</th><th>Cross price</th><th>+7d</th><th>+30d</th><th>+75d</th><th>Worst low after</th><th>Outcome</th></tr></thead>
       <tbody id="tb"></tbody>
     </table></div>
     <p class="note" style="margin-top:10px">ATH = highest intraday high. A setup needs an intraday low at least 50% below the ATH, then a daily close back at or above 70% of it. Crosses within 60 days of the ATH are left out. Bitstamp daily prices from Aug 2011, blockchain.com before that; live price from Coinbase. Not a forecast.</p>
@@ -222,10 +221,16 @@ function render() {
 
   const rows = a.setups.filter(s => !s.skip);
   $('tblNote').textContent = `${a.hits.length} of ${a.resolved.length} went on to a new ATH` + (a.open ? '; one is in progress.' : '.');
-  $('tb').innerHTML = rows.slice().reverse().map(s => `<tr class="${s.hit == null ? 'open' : s.hit ? 'hit' : 'miss'}">
-    <td>${fmtDate(s.t)}</td><td>${fmtUsd(s.p)}</td>
-    <td>${s.hit == null ? '<span class="pill open">in progress</span>' : s.rec != null ? fmtDate(s.rec) : '–'}</td>
-    <td>${s.hit == null ? Math.round((now - s.t) / DAY) + ' so far' : s.hit ? nf(s.days) : '<span class="pill miss">new low first</span>'}</td></tr>`).join('');
+  const cell = v => v == null ? '<span class="mut">–</span>' : `<span class="${v >= 0 ? 'up' : 'dn'}">${sPct(v)}</span>`;
+  $('tb').innerHTML = rows.slice().reverse().map(s => {
+    const out = s.hit == null ? `<span class="pill open">in progress · day ${Math.round((now - s.t) / DAY)}</span>`
+      : s.hit ? `<span class="pill hit">Hit · new ATH in ${nf(s.days)}d</span> <span class="mut">${fmtDate(s.rec)}</span>`
+      : `<span class="pill miss">Miss · new low first</span>`;
+    return `<tr class="${s.hit == null ? 'open' : s.hit ? 'hit' : 'miss'}"><td>${fmtDate(s.t)}</td>
+      <td>${fmtPct(s.low / s.ath - 1)} <span class="mut">${fmtDate(s.lowT, {month:'short', year:'2-digit'})}</span></td>
+      <td>${fmtUsd(s.p)}</td><td>${cell(s.fwd[0])}</td><td>${cell(s.fwd[1])}</td><td>${cell(s.fwd[2])}</td>
+      <td>${cell(s.worst)}</td><td>${out}</td></tr>`;
+  }).join('');
   draw();
 }
 
